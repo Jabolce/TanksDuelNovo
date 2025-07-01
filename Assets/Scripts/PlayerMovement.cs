@@ -1,18 +1,28 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
-    // Start is called before the first frame update
+    public float moveSpeed = 5f;
+    public float rotationSpeed = 180f;
+
+    Rigidbody2D rb;
+    Vector2 movement;
+    float rotation;
+
     void Start()
     {
-        
+        rb = GetComponent<Rigidbody2D>();
     }
 
-    // Update is called once per frame
     void Update()
     {
-        
+        movement.y = Input.GetAxis("Vertical");
+        rotation = -Input.GetAxis("Horizontal");
+    }
+
+    void FixedUpdate()
+    {
+        rb.MovePosition(rb.position + (Vector2)transform.up * movement.y * moveSpeed * Time.fixedDeltaTime);
+        rb.MoveRotation(rb.rotation + rotation * rotationSpeed * Time.fixedDeltaTime);
     }
 }
