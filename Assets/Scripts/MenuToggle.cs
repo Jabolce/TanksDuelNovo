@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class MenuToggle : MonoBehaviour
 {
-    public GameObject menuPanel;  // Drag your menu panel here in the Inspector
+    public GameObject MainMenu;  // Drag your menu panel here in the Inspector
 
     private bool isMenuVisible = false;
 
@@ -11,7 +11,7 @@ public class MenuToggle : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             isMenuVisible = !isMenuVisible;
-            menuPanel.SetActive(isMenuVisible);
+            MainMenu.SetActive(isMenuVisible);
         }
     }
 }
