@@ -1,9 +1,14 @@
 using UnityEngine;
+using System.Collections;
 
-public class PlayerMovement : MonoBehaviour
+
+public class PlayerMovement : MonoBehaviour, ISpeedBuff
 {
     public float moveSpeed = 5f;
     public float rotationSpeed = 180f;
+
+    private float originalSpeed;
+    private bool isSpeedModified = false;
 
     Rigidbody2D rb;
     Vector2 movement;
@@ -24,5 +29,21 @@ public class PlayerMovement : MonoBehaviour
     {
         rb.MovePosition(rb.position + (Vector2)transform.up * movement.y * moveSpeed * Time.fixedDeltaTime);
         rb.MoveRotation(rb.rotation + rotation * rotationSpeed * Time.fixedDeltaTime);
+    }
+
+    public void ModifySpeed(float amount, float duration)
+    {
+        if (isSpeedModified) return;
+
+        moveSpeed += amount;
+        isSpeedModified = true;
+        StartCoroutine(ResetSpeedAfter(duration));
+    }
+
+    private IEnumerator ResetSpeedAfter(float duration)
+    {
+        yield return new WaitForSeconds(duration);
+        moveSpeed = originalSpeed;
+        isSpeedModified = false;
     }
 }

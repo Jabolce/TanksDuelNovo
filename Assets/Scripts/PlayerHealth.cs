@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class PlayerHealth : MonoBehaviour
+public class PlayerHealth : MonoBehaviour, IHealable
 {
     public int MaxHealth = 3;
     public int CurrentHealth;
@@ -22,6 +22,16 @@ public class PlayerHealth : MonoBehaviour
             Die();
         }
     }
+
+    public void Heal(int amount)
+    {
+        CurrentHealth += amount;
+        if (CurrentHealth > MaxHealth)
+            CurrentHealth = MaxHealth;
+
+        healthBar.SetHealth(CurrentHealth);
+    }
+
 
     void Die()
     {
