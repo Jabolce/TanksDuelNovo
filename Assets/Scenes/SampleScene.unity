@@ -133,9 +133,9 @@ GameObject:
   - component: {fileID: 58943270}
   - component: {fileID: 58943269}
   - component: {fileID: 58943271}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Wall_Left
-  m_TagString: Untagged
+  m_TagString: Wall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -823,14 +823,14 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1, y: 1}
+    oldSize: {x: 0.16, y: 0.16}
     newSize: {x: 1, y: 1}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 0.2, y: 0.2}
   m_EdgeRadius: 0
 --- !u!212 &270231891
 SpriteRenderer:
@@ -873,8 +873,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
-  m_Color: {r: 0, g: 0.11920619, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: b9e331ec8b4dfb24f978ecb162325589, type: 3}
+  m_Color: {r: 0, g: 0.5923767, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -893,8 +893,8 @@ Transform:
   m_GameObject: {fileID: 270231888}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2.76, y: -1.66, z: 0}
-  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
+  m_LocalPosition: {x: 2.409, y: -1.669, z: 0}
+  m_LocalScale: {x: 3.6411, y: 3.2809, z: 0.5}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -910,9 +910,9 @@ GameObject:
   - component: {fileID: 273264872}
   - component: {fileID: 273264871}
   - component: {fileID: 273264873}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Wall_Obstacle1
-  m_TagString: Untagged
+  m_TagString: Wall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1077,9 +1077,9 @@ GameObject:
   - component: {fileID: 413685164}
   - component: {fileID: 413685163}
   - component: {fileID: 413685165}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Wall_Right
-  m_TagString: Untagged
+  m_TagString: Wall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1806,6 +1806,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   player: {fileID: 215024336}
   moveSpeed: 2
+  obstacleAvoidanceDistance: 1
+  obstacleLayer:
+    serializedVersion: 2
+    m_Bits: 64
 --- !u!61 &944686397
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -2074,9 +2078,9 @@ GameObject:
   - component: {fileID: 1072210461}
   - component: {fileID: 1072210460}
   - component: {fileID: 1072210462}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Wall_Bottom
-  m_TagString: Untagged
+  m_TagString: Wall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2517,9 +2521,9 @@ GameObject:
   - component: {fileID: 1586508081}
   - component: {fileID: 1586508080}
   - component: {fileID: 1586508082}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Wall_Top
-  m_TagString: Untagged
+  m_TagString: Wall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
