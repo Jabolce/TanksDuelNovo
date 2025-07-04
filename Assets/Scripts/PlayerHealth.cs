@@ -2,12 +2,22 @@
 
 public class PlayerHealth : MonoBehaviour
 {
-    public int health = 3;
+    public int MaxHealth = 3;
+    public int CurrentHealth;
+
+    public HealthBar healthBar;
+
+    private void Start()
+    {
+        CurrentHealth = MaxHealth;
+        healthBar.SetMaxHealth(MaxHealth);
+    }
 
     public void TakeDamage(int damage)
     {
-        health -= damage;
-        if (health <= 0)
+        CurrentHealth -= damage;
+        healthBar.SetHealth(CurrentHealth);
+        if (CurrentHealth <= 0)
         {
             Die();
         }
