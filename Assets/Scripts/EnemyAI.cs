@@ -22,14 +22,22 @@ public class EnemyAI : MonoBehaviour, ISpeedBuff
 
         Vector3 direction = (player.position - transform.position).normalized;
 
-        // Obstacle detection using raycast
+        // ROTATE to face player
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg - 90f;
+        transform.rotation = Quaternion.RotateTowards(
+            transform.rotation,
+            Quaternion.Euler(0, 0, angle),
+            180f * Time.deltaTime // adjust rotation speed here
+        );
+
+        // Check for obstacles
         RaycastHit2D hit = Physics2D.Raycast(transform.position, direction, obstacleAvoidanceDistance, obstacleLayer);
 
         if (hit.collider != null)
         {
-            // Obstacle ahead — steer left or right
-            Vector3 left = Vector3.Cross(direction, Vector3.forward);  // 90 deg to the left
-            Vector3 right = Vector3.Cross(direction, Vector3.back);    // 90 deg to the right
+            // Try to steer around
+            Vector3 left = Vector3.Cross(direction, Vector3.forward);
+            Vector3 right = Vector3.Cross(direction, Vector3.back);
 
             bool leftClear = !Physics2D.Raycast(transform.position, left, obstacleAvoidanceDistance, obstacleLayer);
             bool rightClear = !Physics2D.Raycast(transform.position, right, obstacleAvoidanceDistance, obstacleLayer);
@@ -39,11 +47,14 @@ public class EnemyAI : MonoBehaviour, ISpeedBuff
             else if (rightClear)
                 direction = right;
             else
-                return; // stuck — don't move
+                return; // stuck
         }
 
-        transform.position += direction * moveSpeed * Time.deltaTime;
+        // Move forward in the direction we're currently facing
+        transform.position += transform.up * moveSpeed * Time.deltaTime;
     }
+
+
 
     public void ModifySpeed(float amount, float duration)
     {
