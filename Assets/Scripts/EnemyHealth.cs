@@ -1,13 +1,23 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 public class EnemyHealth : MonoBehaviour
 {
-    public int health = 3;
+    public int MaxHealth = 3;
+    public int CurrentHealth;
+
+    public HealthBar enemyHealthBar;
+
+    private void Start()
+    {
+        CurrentHealth = MaxHealth;
+        enemyHealthBar.SetMaxHealth(MaxHealth);
+    }
 
     public void TakeDamage(int damage)
     {
-        health -= damage;
-        if (health <= 0)
+        CurrentHealth -= damage;
+        enemyHealthBar.SetHealth(CurrentHealth);
+        if (CurrentHealth <= 0)
         {
             Die();
         }
@@ -15,6 +25,8 @@ public class EnemyHealth : MonoBehaviour
 
     void Die()
     {
+        Debug.Log("Player Died!");
         Destroy(gameObject);
+        // подоцна: reload scene, game over screen...
     }
 }
