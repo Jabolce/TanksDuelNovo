@@ -1,22 +1,40 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class PlayerShooting : MonoBehaviour, IShotGun
+public class PlayerShooting : MonoBehaviour, IShotGun, IMachineGun
 {
     public GameObject bulletPrefab;
     public Transform firePoint;
     public float bulletSpeed = 10f;
 
-    public int maxBullets = 1;
+    public int maxBullets = 2;
     private int activeBullets = 0;
 
     private bool shotgunEnabled = false;
 
+    private bool machineGunEnabled = false;
+    public float machineGunFireRate = 0.1f; // 10 bullets per second
+    private float currentFireRate;
+
+
+    // New cooldown variables
+    public float fireCooldown = 1f; // 1 second cooldown
+    private float fireTimer = 1f;
+
+    void Start()
+    {
+        currentFireRate = fireCooldown;
+        fireTimer = currentFireRate; // allow instant fire
+    }
+
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space) && activeBullets < maxBullets)
+        fireTimer += Time.deltaTime;
+
+        if (Input.GetKeyDown(KeyCode.Space) && activeBullets < maxBullets && fireTimer >= currentFireRate)
         {
             Shoot();
+            fireTimer = 0f; // reset cooldown timer on shooting
         }
     }
 
@@ -24,7 +42,7 @@ public class PlayerShooting : MonoBehaviour, IShotGun
     {
         if (shotgunEnabled)
         {
-            FireSpread(4, 60f);  // 4 bullets, 30 degrees spread
+            FireSpread(4, 60f);  // 4 bullets spread
         }
         else
         {
@@ -84,4 +102,22 @@ public class PlayerShooting : MonoBehaviour, IShotGun
         yield return new WaitForSeconds(duration);
         shotgunEnabled = false;
     }
+
+    public void EnableMachineGun(float duration)
+    {
+        if (!machineGunEnabled)
+        {
+            machineGunEnabled = true;
+            currentFireRate = machineGunFireRate;
+            StartCoroutine(DisableMachineGunAfter(duration));
+        }
+    }
+
+    private IEnumerator DisableMachineGunAfter(float duration)
+    {
+        yield return new WaitForSeconds(duration);
+        machineGunEnabled = false;
+        currentFireRate = fireCooldown;
+    }
+
 }

@@ -1,20 +1,34 @@
 using UnityEngine;
 using System.Collections;
 
-public class EnemyShooting : MonoBehaviour, IShotGun
+public class EnemyShooting : MonoBehaviour, IShotGun, IMachineGun
 {
     public GameObject bulletPrefab;
     public Transform firePoint;
     public float bulletSpeed = 8f;
     public float fireRate = 2f;
 
-    private float fireTimer;
+    
     private bool shotgunEnabled = false;
+
+    private float fireTimer = 1f;
+    public float fireCooldown = 1f; 
+
+    private bool machineGunEnabled = false;
+    public float machineGunFireRate = 0.1f; 
+    private float currentFireRate;
+
+    void Start()
+    {
+        currentFireRate = fireCooldown;
+    }
+
 
     void Update()
     {
         fireTimer += Time.deltaTime;
-        if (fireTimer >= fireRate)
+
+        if (fireTimer >= currentFireRate)
         {
             Shoot();
             fireTimer = 0f;
@@ -69,5 +83,22 @@ public class EnemyShooting : MonoBehaviour, IShotGun
     {
         yield return new WaitForSeconds(duration);
         shotgunEnabled = false;
+    }
+
+    public void EnableMachineGun(float duration)
+    {
+        if (!machineGunEnabled)
+        {
+            machineGunEnabled = true;
+            currentFireRate = machineGunFireRate;
+            StartCoroutine(DisableMachineGunAfter(duration));
+        }
+    }
+
+    private IEnumerator DisableMachineGunAfter(float duration)
+    {
+        yield return new WaitForSeconds(duration);
+        machineGunEnabled = false;
+        currentFireRate = fireCooldown;
     }
 }
