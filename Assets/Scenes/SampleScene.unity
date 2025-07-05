@@ -623,7 +623,7 @@ GameObject:
   - component: {fileID: 252690469}
   - component: {fileID: 252690468}
   - component: {fileID: 252690467}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: MachineGunBuff
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -767,7 +767,7 @@ GameObject:
   - component: {fileID: 270231891}
   - component: {fileID: 270231890}
   - component: {fileID: 270231889}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: SpeedPowerUp
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2043,7 +2043,7 @@ GameObject:
   - component: {fileID: 816695181}
   - component: {fileID: 816695180}
   - component: {fileID: 816695179}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: ShotGunBuff
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2187,7 +2187,7 @@ GameObject:
   - component: {fileID: 944686399}
   - component: {fileID: 944686398}
   - component: {fileID: 944686397}
-  - component: {fileID: 944686396}
+  - component: {fileID: 944686403}
   - component: {fileID: 944686401}
   - component: {fileID: 944686402}
   m_Layer: 8
@@ -2197,25 +2197,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &944686396
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 944686395}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f9750c5444d24004196a363d98d3b35d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  player: {fileID: 215024336}
-  moveSpeed: 2
-  rotationSpeed: 180
-  obstacleAvoidanceDistance: 1
-  obstacleLayer:
-    serializedVersion: 2
-    m_Bits: 64
 --- !u!61 &944686397
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -2378,6 +2359,7 @@ MonoBehaviour:
   obstacleLayer:
     serializedVersion: 2
     m_Bits: 64
+  turretTransform: {fileID: 954210064}
 --- !u!114 &944686402
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2393,6 +2375,24 @@ MonoBehaviour:
   MaxHealth: 3
   CurrentHealth: 0
   enemyHealthBar: {fileID: 425739842}
+--- !u!114 &944686403
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 944686395}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ace61b2992f2cb04ab520467c0f431e8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  detectionRadius: 15
+  powerUpLayer:
+    serializedVersion: 2
+    m_Bits: 2048
+  player: {fileID: 215024336}
+  speed: 3
 --- !u!1 &954210063
 GameObject:
   m_ObjectHideFlags: 0
@@ -3623,7 +3623,7 @@ GameObject:
   - component: {fileID: 1946517927}
   - component: {fileID: 1946517926}
   - component: {fileID: 1946517930}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: HealthPowerUp
   m_TagString: Untagged
   m_Icon: {fileID: 0}
