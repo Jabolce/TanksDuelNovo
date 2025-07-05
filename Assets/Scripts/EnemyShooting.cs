@@ -83,6 +83,7 @@ public class EnemyShooting : MonoBehaviour, IShotGun, IMachineGun
     void FireSingle()
     {
         GameObject bullet = Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
+        bullet.layer = LayerMask.NameToLayer("EnemyBullet");
         Rigidbody2D rb = bullet.GetComponent<Rigidbody2D>();
         rb.velocity = firePoint.up * bulletSpeed;
     }
@@ -98,6 +99,7 @@ public class EnemyShooting : MonoBehaviour, IShotGun, IMachineGun
             Quaternion rot = firePoint.rotation * Quaternion.Euler(0, 0, angle);
 
             GameObject bullet = Instantiate(bulletPrefab, firePoint.position, rot);
+            bullet.layer = LayerMask.NameToLayer("EnemyBullet");
             Rigidbody2D rb = bullet.GetComponent<Rigidbody2D>();
             rb.velocity = rot * Vector3.up * bulletSpeed;
         }

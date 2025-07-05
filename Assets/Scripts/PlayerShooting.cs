@@ -53,9 +53,9 @@ public class PlayerShooting : MonoBehaviour, IShotGun, IMachineGun
     void FireSingle()
     {
         GameObject bullet = Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
+        bullet.layer = LayerMask.NameToLayer("PlayerBullet");
         Rigidbody2D rb = bullet.GetComponent<Rigidbody2D>();
         rb.velocity = firePoint.up * bulletSpeed;
-
         activeBullets++;
         Destroy(bullet, 5f);
         StartCoroutine(DecreaseBulletAfterDelay(5f));
@@ -72,6 +72,7 @@ public class PlayerShooting : MonoBehaviour, IShotGun, IMachineGun
             Quaternion rot = firePoint.rotation * Quaternion.Euler(0, 0, angle);
 
             GameObject bullet = Instantiate(bulletPrefab, firePoint.position, rot);
+            bullet.layer = LayerMask.NameToLayer("PlayerBullet");
             Rigidbody2D rb = bullet.GetComponent<Rigidbody2D>();
             rb.velocity = rot * Vector3.up * bulletSpeed;
 
