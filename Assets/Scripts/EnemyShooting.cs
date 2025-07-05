@@ -152,7 +152,7 @@ public class EnemyShooting : MonoBehaviour, IShotGun, IMachineGun
             if (secondHit.collider != null && secondHit.collider.CompareTag("Player"))
             {
                 return true;
-                //трајковски
+                //трајковски радевски
             }
         }
 
