@@ -6,6 +6,8 @@ public class PlayerMovement : MonoBehaviour, ISpeedBuff
 {
     public float moveSpeed = 5f;
     public float rotationSpeed = 180f;
+    private TrailRenderer trail;
+
 
     private float originalSpeed;
     private bool isSpeedModified = false;
@@ -16,6 +18,9 @@ public class PlayerMovement : MonoBehaviour, ISpeedBuff
 
     void Start()
     {
+        trail = GetComponent<TrailRenderer>();
+        if (trail != null)
+            trail.enabled = false;
         rb = GetComponent<Rigidbody2D>();
         originalSpeed = moveSpeed; 
     }
@@ -38,13 +43,23 @@ public class PlayerMovement : MonoBehaviour, ISpeedBuff
 
         moveSpeed += amount;
         isSpeedModified = true;
+
+        // Enable trail effect while boosted
+        if (trail != null)
+            trail.enabled = true;
+
         StartCoroutine(ResetSpeedAfter(duration));
     }
 
     private IEnumerator ResetSpeedAfter(float duration)
     {
         yield return new WaitForSeconds(duration);
+
         moveSpeed = originalSpeed;
         isSpeedModified = false;
+
+        // Disable trail effect after boost ends
+        if (trail != null)
+            trail.enabled = false;
     }
 }
