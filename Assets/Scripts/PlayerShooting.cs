@@ -7,6 +7,9 @@ public class PlayerShooting : MonoBehaviour, IShotGun, IMachineGun
     public Transform firePoint;
     public float bulletSpeed = 10f;
 
+    public GameObject muzzleFlash; // Assign this in the Inspector
+    public float flashDuration = 0.05f;
+
     public int maxBullets = 2;
     private int activeBullets = 0;
 
@@ -59,6 +62,7 @@ public class PlayerShooting : MonoBehaviour, IShotGun, IMachineGun
         activeBullets++;
         Destroy(bullet, 5f);
         StartCoroutine(DecreaseBulletAfterDelay(5f));
+        StartCoroutine(ShowMuzzleFlash());
     }
 
     void FireSpread(int bulletCount, float totalAngle)
@@ -80,6 +84,9 @@ public class PlayerShooting : MonoBehaviour, IShotGun, IMachineGun
             Destroy(bullet, 5f);
             StartCoroutine(DecreaseBulletAfterDelay(5f));
         }
+
+        StartCoroutine(ShowMuzzleFlash());
+
     }
 
     IEnumerator DecreaseBulletAfterDelay(float delay)
@@ -119,6 +126,16 @@ public class PlayerShooting : MonoBehaviour, IShotGun, IMachineGun
         yield return new WaitForSeconds(duration);
         machineGunEnabled = false;
         currentFireRate = fireCooldown;
+    }
+
+    private IEnumerator ShowMuzzleFlash()
+    {
+        if (muzzleFlash != null)
+        {
+            muzzleFlash.SetActive(true);
+            yield return new WaitForSeconds(flashDuration);
+            muzzleFlash.SetActive(false);
+        }
     }
 
 }

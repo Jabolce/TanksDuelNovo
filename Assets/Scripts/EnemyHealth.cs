@@ -4,6 +4,8 @@ public class EnemyHealth : MonoBehaviour, IHealable
 {
     public int MaxHealth = 3;
     public int CurrentHealth;
+    public GameObject explosionPrefab;
+
 
     public HealthBar enemyHealthBar;
 
@@ -36,6 +38,12 @@ public class EnemyHealth : MonoBehaviour, IHealable
     void Die()
     {
         Debug.Log("Player Died!");
+        
+        if (explosionPrefab != null)
+        {
+            Instantiate(explosionPrefab, transform.position, Quaternion.identity);
+        }
+
         Destroy(gameObject);
         // подоцна: reload scene, game over screen...
     }

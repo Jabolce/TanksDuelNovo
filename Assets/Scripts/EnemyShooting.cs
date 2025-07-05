@@ -8,6 +8,9 @@ public class EnemyShooting : MonoBehaviour, IShotGun, IMachineGun
     public float bulletSpeed = 8f;
     public float fireRate = 2f;
 
+    public GameObject muzzleFlash; // Assign this in the Inspector
+    public float flashDuration = 0.05f;
+
     private bool shotgunEnabled = false;
     private bool machineGunEnabled = false;
 
@@ -67,6 +70,8 @@ public class EnemyShooting : MonoBehaviour, IShotGun, IMachineGun
 
         Vector2 direction = (player.position - firePoint.position).normalized;
         rb.velocity = direction * bulletSpeed;
+        StartCoroutine(ShowMuzzleFlash());
+
     }
 
     void FireSpread(int bulletCount, float totalAngle)
@@ -86,7 +91,10 @@ public class EnemyShooting : MonoBehaviour, IShotGun, IMachineGun
             bullet.layer = LayerMask.NameToLayer("EnemyBullet");
             Rigidbody2D rb = bullet.GetComponent<Rigidbody2D>();
             rb.velocity = rotation * Vector2.up * bulletSpeed;
+
         }
+        StartCoroutine(ShowMuzzleFlash());
+
     }
 
     public void EnableShotgun(float duration)
@@ -152,10 +160,21 @@ public class EnemyShooting : MonoBehaviour, IShotGun, IMachineGun
             if (secondHit.collider != null && secondHit.collider.CompareTag("Player"))
             {
                 return true;
-                //трајковски радевски
             }
         }
 
         return false;
     }
+
+
+    private IEnumerator ShowMuzzleFlash()
+    {
+        if (muzzleFlash != null)
+        {
+            muzzleFlash.SetActive(true);
+            yield return new WaitForSeconds(flashDuration);
+            muzzleFlash.SetActive(false);
+        }
+    }
+
 }
