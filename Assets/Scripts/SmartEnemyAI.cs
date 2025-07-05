@@ -2,13 +2,15 @@
 
 public class SmartEnemyAI : MonoBehaviour
 {
-    public float detectionRadius = 15f;
-    public LayerMask powerUpLayer;
-    public Transform player;
+    public float detectionRadius = 10f;
     public float speed = 3f;
+    public LayerMask powerUpLayer;
+    public LayerMask obstacleLayer;
+
+    public Transform player;
 
     private Rigidbody2D rb;
-    private Transform currentTarget;
+    private Transform targetPowerUp;
 
     void Start()
     {
@@ -17,40 +19,75 @@ public class SmartEnemyAI : MonoBehaviour
 
     void Update()
     {
-        // 1. Побарај најблиску PowerUp
-        Transform powerUp = FindClosestPowerUp();
+        targetPowerUp = FindClosestPowerUp();
 
-        // 2. Ако има PowerUp → тргни кон него, инаку кон играчот
-        if (powerUp != null)
+        float playerDist = Vector2.Distance(transform.position, player.position);
+        float powerUpDist = targetPowerUp != null ? Vector2.Distance(transform.position, targetPowerUp.position) : Mathf.Infinity;
+
+        bool playerVisible = CanSee(player.position);
+        bool powerUpReachable = targetPowerUp != null && CanSee(targetPowerUp.position);
+
+        if (playerVisible && playerDist < powerUpDist)
         {
-            currentTarget = powerUp;
+            // 👁️ Играчот е поблиску и видлив → застани и ротирај
+            StopMovement();
+            RotateTowards(player.position);
+        }
+        else if (powerUpReachable)
+        {
+            // 🟩 PowerUp достапен → оди кон него
+            MoveTowards(targetPowerUp.position);
+        }
+        else if (!playerVisible && CanSee(player.position))
+        {
+            // ❌ Не гледа player, но нема PowerUp → оди до player
+            MoveTowards(player.position);
         }
         else
         {
-            currentTarget = player;
+            StopMovement();
         }
+    }
 
-        // 3. Движење кон целта
-        Vector2 direction = (currentTarget.position - transform.position).normalized;
+    void MoveTowards(Vector2 target)
+    {
+        Vector2 direction = (target - (Vector2)transform.position).normalized;
         rb.velocity = direction * speed;
+        RotateTowards(target);
+    }
 
-        // 4. Ротирање кон целта
-        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+    void StopMovement()
+    {
+        rb.velocity = Vector2.zero;
+    }
+
+    void RotateTowards(Vector2 target)
+    {
+        Vector2 dir = (target - (Vector2)transform.position).normalized;
+        float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg - 90f;
         rb.rotation = angle;
+    }
+
+    bool CanSee(Vector2 target)
+    {
+        Vector2 dir = target - (Vector2)transform.position;
+        float dist = dir.magnitude;
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, dir.normalized, dist, obstacleLayer);
+        return hit.collider == null;
     }
 
     Transform FindClosestPowerUp()
     {
         Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, detectionRadius, powerUpLayer);
-        float minDistance = Mathf.Infinity;
+        float minDist = Mathf.Infinity;
         Transform closest = null;
 
         foreach (Collider2D hit in hits)
         {
             float dist = Vector2.Distance(transform.position, hit.transform.position);
-            if (dist < minDistance)
+            if (dist < minDist && CanSee(hit.transform.position))
             {
-                minDistance = dist;
+                minDist = dist;
                 closest = hit.transform;
             }
         }

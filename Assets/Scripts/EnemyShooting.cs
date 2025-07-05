@@ -1,77 +1,82 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using System.Collections;
+using UnityEngine;
 
-public class EnemyShooting : MonoBehaviour, IShotGun, IMachineGun
+public class EnemyShooting : MonoBehaviour
 {
+    public Transform player;
     public GameObject bulletPrefab;
     public Transform firePoint;
     public float bulletSpeed = 8f;
     public float fireRate = 2f;
-
-    public GameObject muzzleFlash; // Assign this in the Inspector
+    public GameObject muzzleFlash;
     public float flashDuration = 0.05f;
+
+    public LayerMask obstacleLayer;
+
+    private float fireTimer = 0f;
 
     private bool shotgunEnabled = false;
     private bool machineGunEnabled = false;
-
-    private float fireTimer = 1f;
-    public float fireCooldown = 1f;
     public float machineGunFireRate = 0.1f;
+    public float fireCooldown = 1f;
     private float currentFireRate;
-
-    public Transform player;
-    public LayerMask obstacleLayer;
-
-    public Transform turretTransform; // 👈 ново поле за ротирање
 
     void Start()
     {
-        currentFireRate = fireCooldown;
+        currentFireRate = fireRate;
     }
 
     void Update()
     {
         fireTimer += Time.deltaTime;
 
-        if (fireTimer >= currentFireRate)
+        if (player != null && CanSeePlayer())
         {
-            if (CanSeePlayer() || CanHitPlayerWithRicochet())
+            if (IsFacingPlayer())
             {
-                Shoot();
-                fireTimer = 0f;
+                if (fireTimer >= currentFireRate)
+                {
+                    if (shotgunEnabled)
+                    {
+                        FireSpread(5, 45f);
+                    }
+                    else
+                    {
+                        Shoot();
+                    }
+
+                    fireTimer = 0f;
+                }
             }
         }
     }
 
+    bool IsFacingPlayer()
+    {
+        Vector2 toPlayer = (player.position - transform.position).normalized;
+        Vector2 facing = transform.up;
+        float angle = Vector2.Angle(facing, toPlayer);
+        return angle < 10f;
+    }
+
+    bool CanSeePlayer()
+    {
+        if (player == null) return false;
+
+        Vector2 dir = player.position - transform.position;
+        float dist = dir.magnitude;
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, dir.normalized, dist, obstacleLayer);
+
+        return hit.collider == null || hit.collider.transform == player;
+    }
+
     void Shoot()
     {
-        // Ротирај турет кон играчот пред пукање
-        if (player != null && turretTransform != null)
-        {
-            Vector2 lookDir = player.position - turretTransform.position;
-            float angle = Mathf.Atan2(lookDir.y, lookDir.x) * Mathf.Rad2Deg - 90f;
-            turretTransform.rotation = Quaternion.Euler(0, 0, angle);
-        }
-
-        if (shotgunEnabled)
-        {
-            FireSpread(4, 60f);
-        }
-        else
-        {
-            FireSingle();
-        }
-    }
-    void FireSingle()
-    {
         GameObject bullet = Instantiate(bulletPrefab, firePoint.position, Quaternion.identity);
-        bullet.layer = LayerMask.NameToLayer("EnemyBullet");
         Rigidbody2D rb = bullet.GetComponent<Rigidbody2D>();
-
         Vector2 direction = (player.position - firePoint.position).normalized;
         rb.velocity = direction * bulletSpeed;
         StartCoroutine(ShowMuzzleFlash());
-
     }
 
     void FireSpread(int bulletCount, float totalAngle)
@@ -91,10 +96,9 @@ public class EnemyShooting : MonoBehaviour, IShotGun, IMachineGun
             bullet.layer = LayerMask.NameToLayer("EnemyBullet");
             Rigidbody2D rb = bullet.GetComponent<Rigidbody2D>();
             rb.velocity = rotation * Vector2.up * bulletSpeed;
-
         }
-        StartCoroutine(ShowMuzzleFlash());
 
+        StartCoroutine(ShowMuzzleFlash());
     }
 
     public void EnableShotgun(float duration)
@@ -129,17 +133,14 @@ public class EnemyShooting : MonoBehaviour, IShotGun, IMachineGun
         currentFireRate = fireCooldown;
     }
 
-    public bool CanSeePlayer()
+    private IEnumerator ShowMuzzleFlash()
     {
-        if (player == null) return false;
-
-        Vector2 direction = player.position - transform.position;
-        RaycastHit2D hit = Physics2D.Raycast(transform.position, direction.normalized, direction.magnitude, obstacleLayer);
-
-        if (hit.collider == null) return true;
-        if (hit.collider.transform == player) return true;
-
-        return false;
+        if (muzzleFlash != null)
+        {
+            muzzleFlash.SetActive(true);
+            yield return new WaitForSeconds(flashDuration);
+            muzzleFlash.SetActive(false);
+        }
     }
 
     bool CanHitPlayerWithRicochet()
@@ -154,7 +155,6 @@ public class EnemyShooting : MonoBehaviour, IShotGun, IMachineGun
         if (firstHit.collider != null)
         {
             Vector2 reflectedDir = Vector2.Reflect(direction, firstHit.normal);
-
             RaycastHit2D secondHit = Physics2D.Raycast(firstHit.point + reflectedDir * 0.1f, reflectedDir, maxDistance, obstacleLayer | LayerMask.GetMask("Player"));
 
             if (secondHit.collider != null && secondHit.collider.CompareTag("Player"))
@@ -165,16 +165,4 @@ public class EnemyShooting : MonoBehaviour, IShotGun, IMachineGun
 
         return false;
     }
-
-
-    private IEnumerator ShowMuzzleFlash()
-    {
-        if (muzzleFlash != null)
-        {
-            muzzleFlash.SetActive(true);
-            yield return new WaitForSeconds(flashDuration);
-            muzzleFlash.SetActive(false);
-        }
-    }
-
 }
