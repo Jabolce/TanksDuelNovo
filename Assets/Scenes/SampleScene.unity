@@ -483,7 +483,7 @@ Transform:
   m_GameObject: {fileID: 215024332}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -12.44, y: -7.63, z: 0}
+  m_LocalPosition: {x: -13.41, y: -7.72, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -519,6 +519,8 @@ MonoBehaviour:
   bulletPrefab: {fileID: 3474795023730254665, guid: 47d513a6633854940bc83ad7ef640269, type: 3}
   firePoint: {fileID: 1717458728}
   bulletSpeed: 10
+  muzzleFlash: {fileID: 0}
+  flashDuration: 0.05
   maxBullets: 5
   machineGunFireRate: 0.1
   fireCooldown: 1
@@ -536,6 +538,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   MaxHealth: 3
   CurrentHealth: 0
+  explosionPrefab: {fileID: 0}
   healthBar: {fileID: 1751160864}
 --- !u!96 &215024340
 TrailRenderer:
@@ -1414,6 +1417,37 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
+--- !u!1 &430586679
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 430586680}
+  m_Layer: 0
+  m_Name: NavMesh
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &430586680
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 430586679}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1.7756723, y: 0.09623788, z: -0.032825857}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &500724753
 GameObject:
   m_ObjectHideFlags: 0
@@ -2464,17 +2498,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: efa038621e6bfbb489159d05fd3092e0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  player: {fileID: 215024336}
   bulletPrefab: {fileID: 2183842791087958459, guid: ba3e2a370cdec064cbf569934c094b1d, type: 3}
   firePoint: {fileID: 2126996851}
   bulletSpeed: 8
   fireRate: 2
-  fireCooldown: 1
-  machineGunFireRate: 0.1
-  player: {fileID: 215024336}
+  muzzleFlash: {fileID: 0}
+  flashDuration: 0.05
   obstacleLayer:
     serializedVersion: 2
     m_Bits: 64
-  turretTransform: {fileID: 954210064}
+  machineGunFireRate: 0.1
+  fireCooldown: 1
 --- !u!114 &944686402
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2489,6 +2524,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   MaxHealth: 3
   CurrentHealth: 0
+  explosionPrefab: {fileID: 0}
   enemyHealthBar: {fileID: 425739842}
 --- !u!114 &944686403
 MonoBehaviour:
@@ -2503,11 +2539,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   detectionRadius: 15
+  speed: 3
   powerUpLayer:
     serializedVersion: 2
     m_Bits: 2048
+  obstacleLayer:
+    serializedVersion: 2
+    m_Bits: 0
   player: {fileID: 215024336}
-  speed: 3
 --- !u!1 &954210063
 GameObject:
   m_ObjectHideFlags: 0
@@ -9217,3 +9256,4 @@ SceneRoots:
   - {fileID: 1982362321}
   - {fileID: 1761767053}
   - {fileID: 558448616}
+  - {fileID: 430586680}
