@@ -1968,6 +1968,10 @@ MonoBehaviour:
   fireRate: 2
   fireCooldown: 1
   machineGunFireRate: 0.1
+  player: {fileID: 215024336}
+  obstacleLayer:
+    serializedVersion: 2
+    m_Bits: 64
 --- !u!114 &944686402
 MonoBehaviour:
   m_ObjectHideFlags: 0

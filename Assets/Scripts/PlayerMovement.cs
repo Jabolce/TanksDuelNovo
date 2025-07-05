@@ -17,6 +17,7 @@ public class PlayerMovement : MonoBehaviour, ISpeedBuff
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        originalSpeed = moveSpeed; 
     }
 
     void Update()
