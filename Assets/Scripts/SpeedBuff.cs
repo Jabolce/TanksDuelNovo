@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -10,6 +10,7 @@ public class SpeedBuff : PowerUpEffect
 
     public override void Apply(GameObject target)
     {
+
         ISpeedBuff mod = target.GetComponent<ISpeedBuff>();
         if (mod != null)
         {

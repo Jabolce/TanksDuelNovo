@@ -1,104 +1,123 @@
-﻿using System.Collections;
-using UnityEngine;
+﻿using UnityEngine;
+using System.Collections;
 
-public class EnemyShooting : MonoBehaviour
+public class EnemyShooting : MonoBehaviour, IShotGun, IMachineGun
 {
     public Transform player;
+    public Transform turret;
     public GameObject bulletPrefab;
     public Transform firePoint;
     public float bulletSpeed = 8f;
-    public float fireRate = 2f;
+    public float fireRate = 1f;
+    public LayerMask obstacleLayer;
+
     public GameObject muzzleFlash;
     public float flashDuration = 0.05f;
 
-    public LayerMask obstacleLayer;
-
-    private float fireTimer = 0f;
-
+    private float fireTimer;
     private bool shotgunEnabled = false;
     private bool machineGunEnabled = false;
+
     public float machineGunFireRate = 0.1f;
-    public float fireCooldown = 1f;
     private float currentFireRate;
+    public float normalFireRate = 1f;
 
     void Start()
     {
-        currentFireRate = fireRate;
+        currentFireRate = normalFireRate;
     }
 
     void Update()
     {
+        if (player == null) return;
+
         fireTimer += Time.deltaTime;
 
-        if (player != null && CanSeePlayer())
+        if (CanSeePlayer())
         {
-            if (IsFacingPlayer())
-            {
-                if (fireTimer >= currentFireRate)
-                {
-                    if (shotgunEnabled)
-                    {
-                        FireSpread(5, 45f);
-                    }
-                    else
-                    {
-                        Shoot();
-                    }
+            RotateTowardsPlayer();
 
-                    fireTimer = 0f;
-                }
+            if (IsFacingPlayer() && fireTimer >= currentFireRate)
+            {
+                Shoot();
+                fireTimer = 0f;
             }
         }
     }
 
+    void RotateTowardsPlayer()
+    {
+        Vector2 direction = player.position - turret.position;
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg - 90f;
+        turret.rotation = Quaternion.RotateTowards(
+            turret.rotation,
+            Quaternion.Euler(0, 0, angle),
+            200f * Time.deltaTime
+        );
+    }
+
     bool IsFacingPlayer()
     {
-        Vector2 toPlayer = (player.position - transform.position).normalized;
-        Vector2 facing = transform.up;
-        float angle = Vector2.Angle(facing, toPlayer);
-        return angle < 10f;
+        Vector2 toPlayer = (player.position - turret.position).normalized;
+        Vector2 facing = turret.up;
+        return Vector2.Angle(facing, toPlayer) < 15f;
     }
 
     bool CanSeePlayer()
     {
-        if (player == null) return false;
-
-        Vector2 dir = player.position - transform.position;
+        Vector2 dir = player.position - firePoint.position;
         float dist = dir.magnitude;
-        RaycastHit2D hit = Physics2D.Raycast(transform.position, dir.normalized, dist, obstacleLayer);
+        RaycastHit2D hit = Physics2D.Raycast(firePoint.position, dir.normalized, dist, obstacleLayer);
 
         return hit.collider == null || hit.collider.transform == player;
     }
 
     void Shoot()
     {
-        GameObject bullet = Instantiate(bulletPrefab, firePoint.position, Quaternion.identity);
+        if (shotgunEnabled)
+        {
+            FireSpread(4, 60f);
+        }
+        else
+        {
+            FireSingle();
+        }
+    }
+
+    void FireSingle()
+    {
+        GameObject bullet = Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
         Rigidbody2D rb = bullet.GetComponent<Rigidbody2D>();
-        Vector2 direction = (player.position - firePoint.position).normalized;
-        rb.velocity = direction * bulletSpeed;
+        rb.velocity = firePoint.up * bulletSpeed;
         StartCoroutine(ShowMuzzleFlash());
     }
 
     void FireSpread(int bulletCount, float totalAngle)
     {
-        Vector2 baseDirection = (player.position - firePoint.position).normalized;
-        float angleToPlayer = Mathf.Atan2(baseDirection.y, baseDirection.x) * Mathf.Rad2Deg;
-
         float angleStep = totalAngle / (bulletCount - 1);
-        float startAngle = angleToPlayer - totalAngle / 2f;
+        float startAngle = -totalAngle / 2f;
 
         for (int i = 0; i < bulletCount; i++)
         {
             float angle = startAngle + i * angleStep;
-            Quaternion rotation = Quaternion.Euler(0, 0, angle);
+            Quaternion rot = firePoint.rotation * Quaternion.Euler(0, 0, angle);
 
-            GameObject bullet = Instantiate(bulletPrefab, firePoint.position, rotation);
-            bullet.layer = LayerMask.NameToLayer("EnemyBullet");
+            GameObject bullet = Instantiate(bulletPrefab, firePoint.position, rot);
             Rigidbody2D rb = bullet.GetComponent<Rigidbody2D>();
-            rb.velocity = rotation * Vector2.up * bulletSpeed;
+            rb.velocity = rot * Vector2.up * bulletSpeed;
         }
 
         StartCoroutine(ShowMuzzleFlash());
+    }
+
+    private IEnumerator ShowMuzzleFlash()
+    {
+        if (muzzleFlash != null)
+        {
+            muzzleFlash.SetActive(true);
+            yield return new WaitForSeconds(flashDuration);
+            muzzleFlash.SetActive(false);
+        }
     }
 
     public void EnableShotgun(float duration)
@@ -130,39 +149,6 @@ public class EnemyShooting : MonoBehaviour
     {
         yield return new WaitForSeconds(duration);
         machineGunEnabled = false;
-        currentFireRate = fireCooldown;
-    }
-
-    private IEnumerator ShowMuzzleFlash()
-    {
-        if (muzzleFlash != null)
-        {
-            muzzleFlash.SetActive(true);
-            yield return new WaitForSeconds(flashDuration);
-            muzzleFlash.SetActive(false);
-        }
-    }
-
-    bool CanHitPlayerWithRicochet()
-    {
-        if (player == null) return false;
-
-        Vector2 start = firePoint.position;
-        Vector2 direction = firePoint.up;
-        float maxDistance = 20f;
-
-        RaycastHit2D firstHit = Physics2D.Raycast(start, direction, maxDistance, obstacleLayer);
-        if (firstHit.collider != null)
-        {
-            Vector2 reflectedDir = Vector2.Reflect(direction, firstHit.normal);
-            RaycastHit2D secondHit = Physics2D.Raycast(firstHit.point + reflectedDir * 0.1f, reflectedDir, maxDistance, obstacleLayer | LayerMask.GetMask("Player"));
-
-            if (secondHit.collider != null && secondHit.collider.CompareTag("Player"))
-            {
-                return true;
-            }
-        }
-
-        return false;
+        currentFireRate = normalFireRate;
     }
 }

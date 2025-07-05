@@ -1,97 +1,122 @@
 ﻿using UnityEngine;
+using Pathfinding;
+using System.Collections;
 
-public class SmartEnemyAI : MonoBehaviour
+public class SmartEnemyAI : MonoBehaviour, ISpeedBuff
 {
-    public float detectionRadius = 10f;
-    public float speed = 3f;
-    public LayerMask powerUpLayer;
-    public LayerMask obstacleLayer;
-
     public Transform player;
+    public Transform[] powerUps;
+    public float updateRate = 0.5f;
+    public LayerMask obstacleMask;
 
-    private Rigidbody2D rb;
-    private Transform targetPowerUp;
+    private Seeker seeker;
+    private AIPath aiPath;
+    private Path path;
+    private int currentWaypoint = 0;
+    private Transform target;
+
+    private float baseSpeed;
+    private bool isSpeedModified = false;
+    private TrailRenderer trail;
 
     void Start()
     {
-        rb = GetComponent<Rigidbody2D>();
+        seeker = GetComponent<Seeker>();
+        aiPath = GetComponent<AIPath>();
+
+        if (aiPath == null)
+        {
+            Debug.LogError("AIPath component not found on enemy!");
+            return;
+        }
+
+        baseSpeed = aiPath.maxSpeed;
+
+        trail = GetComponent<TrailRenderer>();
+        if (trail != null)
+            trail.enabled = false;
+
+        InvokeRepeating(nameof(UpdatePath), 0f, updateRate);
     }
 
-    void Update()
+    void UpdatePath()
     {
-        targetPowerUp = FindClosestPowerUp();
+        target = ChooseTarget();
 
-        float playerDist = Vector2.Distance(transform.position, player.position);
-        float powerUpDist = targetPowerUp != null ? Vector2.Distance(transform.position, targetPowerUp.position) : Mathf.Infinity;
-
-        bool playerVisible = CanSee(player.position);
-        bool powerUpReachable = targetPowerUp != null && CanSee(targetPowerUp.position);
-
-        if (playerVisible && playerDist < powerUpDist)
+        if (seeker.IsDone() && target != null)
         {
-            // 👁️ Играчот е поблиску и видлив → застани и ротирај
-            StopMovement();
-            RotateTowards(player.position);
-        }
-        else if (powerUpReachable)
-        {
-            // 🟩 PowerUp достапен → оди кон него
-            MoveTowards(targetPowerUp.position);
-        }
-        else if (!playerVisible && CanSee(player.position))
-        {
-            // ❌ Не гледа player, но нема PowerUp → оди до player
-            MoveTowards(player.position);
-        }
-        else
-        {
-            StopMovement();
+            seeker.StartPath(transform.position, target.position, OnPathComplete);
         }
     }
 
-    void MoveTowards(Vector2 target)
+    Transform ChooseTarget()
     {
-        Vector2 direction = (target - (Vector2)transform.position).normalized;
-        rb.velocity = direction * speed;
-        RotateTowards(target);
-    }
+        float distanceToPlayer = Vector2.Distance(transform.position, player.position);
 
-    void StopMovement()
-    {
-        rb.velocity = Vector2.zero;
-    }
+        bool canSeePlayer = !Physics2D.Raycast(transform.position, player.position - transform.position,
+                                               distanceToPlayer, obstacleMask);
 
-    void RotateTowards(Vector2 target)
-    {
-        Vector2 dir = (target - (Vector2)transform.position).normalized;
-        float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg - 90f;
-        rb.rotation = angle;
-    }
+        foreach (Transform p in powerUps)
+        {
+            float d = Vector2.Distance(transform.position, p.position);
+            if (d < distanceToPlayer)
+                return p;
+        }
 
-    bool CanSee(Vector2 target)
-    {
-        Vector2 dir = target - (Vector2)transform.position;
-        float dist = dir.magnitude;
-        RaycastHit2D hit = Physics2D.Raycast(transform.position, dir.normalized, dist, obstacleLayer);
-        return hit.collider == null;
+        return canSeePlayer ? player : FindClosestPowerUp();
     }
 
     Transform FindClosestPowerUp()
     {
-        Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, detectionRadius, powerUpLayer);
-        float minDist = Mathf.Infinity;
         Transform closest = null;
+        float closestDist = Mathf.Infinity;
 
-        foreach (Collider2D hit in hits)
+        foreach (Transform p in powerUps)
         {
-            float dist = Vector2.Distance(transform.position, hit.transform.position);
-            if (dist < minDist && CanSee(hit.transform.position))
+            float d = Vector2.Distance(transform.position, p.position);
+            if (d < closestDist)
             {
-                minDist = dist;
-                closest = hit.transform;
+                closestDist = d;
+                closest = p;
             }
         }
 
-        return closest;
+        return closest != null ? closest : player;
+    }
+
+    void OnPathComplete(Path p)
+    {
+        if (!p.error)
+        {
+            path = p;
+            currentWaypoint = 0;
+        }
+    }
+
+    // ISpeedBuff implementation
+    public void ModifySpeed(float amount, float duration)
+    {
+        if (isSpeedModified || aiPath == null) return;
+
+        aiPath.maxSpeed += amount;
+        isSpeedModified = true;
+
+        if (trail != null)
+            trail.enabled = true;
+
+        StartCoroutine(ResetSpeedAfter(duration));
+    }
+
+    private IEnumerator ResetSpeedAfter(float duration)
+    {
+        yield return new WaitForSeconds(duration);
+
+        if (aiPath != null)
+            aiPath.maxSpeed = baseSpeed;
+
+        isSpeedModified = false;
+
+        if (trail != null)
+            trail.enabled = false;
     }
 }
