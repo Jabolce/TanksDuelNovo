@@ -5,9 +5,9 @@ public class PlayerHealth : MonoBehaviour, IHealable
     public int MaxHealth = 3;
     public int CurrentHealth;
     public GameObject explosionPrefab;
-
-
+    public GameObject gameOverPanel;
     public HealthBar healthBar;
+
 
     private void Start()
     {
@@ -41,7 +41,13 @@ public class PlayerHealth : MonoBehaviour, IHealable
         
         if (explosionPrefab != null)
         {
+
             Instantiate(explosionPrefab, transform.position, Quaternion.identity);
+
+        }
+        if (gameOverPanel != null)
+        {
+            gameOverPanel.SetActive(true);
         }
 
         Destroy(gameObject);
