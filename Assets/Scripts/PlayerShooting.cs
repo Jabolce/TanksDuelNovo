@@ -134,7 +134,7 @@ public class PlayerShooting : MonoBehaviour, IShotGun, IMachineGun
         {
             muzzleFlash.SetActive(true);
             yield return new WaitForSeconds(flashDuration);
-            muzzleFlash.SetActive(false);
+            muzzleFlash.SetActive(false); //zipzapzupdsadsa
         }
     }
 

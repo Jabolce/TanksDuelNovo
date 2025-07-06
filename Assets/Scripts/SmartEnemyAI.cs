@@ -45,7 +45,7 @@ public class SmartEnemyAI : MonoBehaviour, ISpeedBuff
 
         if (seeker.IsDone() && target != null)
         {
-            seeker.StartPath(transform.position, target.position, OnPathComplete);
+            seeker.StartPath(transform.position, target.position, OnPathComplete); // zlip zlorp
         }
     }
 
