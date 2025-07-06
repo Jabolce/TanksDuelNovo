@@ -5,7 +5,7 @@ public class EnemyHealth : MonoBehaviour, IHealable
     public int MaxHealth = 3;
     public int CurrentHealth;
     public GameObject explosionPrefab;
-
+    public GameObject gameOverPanel;
 
     public HealthBar enemyHealthBar;
 
@@ -42,6 +42,10 @@ public class EnemyHealth : MonoBehaviour, IHealable
         if (explosionPrefab != null)
         {
             Instantiate(explosionPrefab, transform.position, Quaternion.identity);
+        }
+        if (gameOverPanel != null)
+        {
+            gameOverPanel.SetActive(true);
         }
 
         Destroy(gameObject);
