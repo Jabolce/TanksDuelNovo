@@ -1,14 +1,18 @@
-using UnityEngine;
+﻿using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class MenuToggle : MonoBehaviour
 {
     public GameObject OptionsPanel;
-    public GameObject MainMenu; // May or may not be assigned depending on scene
+    public GameObject MainMenu;
 
     private bool isPaused = false;
 
     void Update()
     {
+        if (SceneManager.GetActiveScene().buildIndex == 0)
+            return;
+
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             isPaused = !isPaused;
@@ -28,6 +32,9 @@ public class MenuToggle : MonoBehaviour
 
     public void ResumeGame()
     {
+        if (SceneManager.GetActiveScene().buildIndex == 0)
+            return;
+
         if (OptionsPanel != null)
             OptionsPanel.SetActive(false);
 
