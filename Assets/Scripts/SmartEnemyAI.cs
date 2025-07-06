@@ -26,7 +26,7 @@ public class SmartEnemyAI : MonoBehaviour, ISpeedBuff
 
         if (aiPath == null)
         {
-            Debug.LogError("AIPath component not found on enemy!");
+            Debug.LogError("AIPath component not found on enemy!"); //badinga
             return;
         }
 
