@@ -4,7 +4,7 @@ using System.Collections;
 public class EnemyShooting : MonoBehaviour, IShotGun, IMachineGun
 {
     public Transform player;
-    public Transform turret;
+    public Transform tankBody; // <--- заменува turret
     public GameObject bulletPrefab;
     public Transform firePoint;
     public float bulletSpeed = 8f;
@@ -24,6 +24,7 @@ public class EnemyShooting : MonoBehaviour, IShotGun, IMachineGun
 
     void Start()
     {
+        normalFireRate = 2.5f;
         currentFireRate = normalFireRate;
     }
 
@@ -47,10 +48,11 @@ public class EnemyShooting : MonoBehaviour, IShotGun, IMachineGun
 
     void RotateTowardsPlayer()
     {
-        Vector2 direction = player.position - turret.position;
+        Vector2 direction = player.position - tankBody.position;
         float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg - 90f;
-        turret.rotation = Quaternion.RotateTowards(
-            turret.rotation,
+
+        tankBody.rotation = Quaternion.RotateTowards(
+            tankBody.rotation,
             Quaternion.Euler(0, 0, angle),
             200f * Time.deltaTime
         );
@@ -58,8 +60,8 @@ public class EnemyShooting : MonoBehaviour, IShotGun, IMachineGun
 
     bool IsFacingPlayer()
     {
-        Vector2 toPlayer = (player.position - turret.position).normalized;
-        Vector2 facing = turret.up;
+        Vector2 toPlayer = (player.position - tankBody.position).normalized;
+        Vector2 facing = tankBody.up;
         return Vector2.Angle(facing, toPlayer) < 15f;
     }
 
