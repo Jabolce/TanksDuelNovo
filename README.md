@@ -85,5 +85,5 @@ EnemyHealth.cs, PlayerHealth.cs
 GameOverManager.cs за управување со UI при пораз
 
 Како да играш:
-WASD - го контролира движењето на тенкот
+WASD - го контролира движењето на тенкот,
 Space bar - тенкот пука
